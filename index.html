@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sullivan Family Photos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            color: white;
+            padding: 40px 20px;
+        }
+        
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .gallery {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        
+        .photo-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .photo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+        
+        .photo-card img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .photo-info {
+            padding: 15px;
+        }
+        
+        .photo-title {
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+            color: #1f2937;
+        }
+        
+        .photo-date {
+            color: #6b7280;
+            font-size: 0.9em;
+        }
+        
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .lightbox.active {
+            display: flex;
+        }
+        
+        .lightbox img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 10px;
+        }
+        
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        
+        .upload-info {
+            background: white;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .upload-info h2 {
+            color: #1f2937;
+            margin-bottom: 15px;
+        }
+        
+        .upload-info p {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        
+        .upload-info code {
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>📸 Sullivan Family Photos</h1>
+        <p class="subtitle">Our memories, beautifully preserved</p>
+    </header>
+    
+    <div class="upload-info">
+        <h2>📤 Want to add photos?</h2>
+        <p>Family members can easily add photos:</p>
+        <ol style="margin-left: 20px; color: #6b7280;">
+            <li>Go to the <a href="https://github.com/9nywc4dqdd-cmyk/9nywc4dqdd-cmyk.github.io" target="_blank" style="color: #667eea;">GitHub repository</a></li>
+            <li>Click on the <code>photos</code> folder</li>
+            <li>Click "Add file" → "Upload files"</li>
+            <li>Drag your photos and commit!</li>
+        </ol>
+        <p style="margin-top: 15px;"><strong>Need help?</strong> Text Ryan for simple instructions!</p>
+    </div>
+    
+    <div class="gallery" id="gallery">
+        <!-- Photos will be loaded here -->
+    </div>
+    
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+        <img id="lightbox-img" src="" alt="">
+    </div>
+    
+    <script>
+        // Photo data - add your photos here
+        const photos = [
+            {
+                src: 'photos/sample1.jpg',
+                title: 'Sample Photo 1',
+                date: 'January 2026'
+            },
+            {
+                src: 'photos/sample2.jpg',
+                title: 'Sample Photo 2',
+                date: 'January 2026'
+            }
+            // Add more photos here
+        ];
+        
+        // Load photos into gallery
+        const gallery = document.getElementById('gallery');
+        
+        photos.forEach(photo => {
+            const card = document.createElement('div');
+            card.className = 'photo-card';
+            card.onclick = () => openLightbox(photo.src);
+            
+            card.innerHTML = `
+                <img src="${photo.src}" alt="${photo.title}" onerror="this.src='https://via.placeholder.com/300x250?text=Photo+Coming+Soon'">
+                <div class="photo-info">
+                    <div class="photo-title">${photo.title}</div>
+                    <div class="photo-date">${photo.date}</div>
+                </div>
+            `;
+            
+            gallery.appendChild(card);
+        });
+        
+        function openLightbox(src) {
+            document.getElementById('lightbox-img').src = src;
+            document.getElementById('lightbox').classList.add('active');
+        }
+        
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('active');
+        }
+        
+        // Close lightbox on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeLightbox();
+        });
+    </script>
+</body>
+</html>
